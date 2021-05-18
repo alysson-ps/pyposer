@@ -1,6 +1,7 @@
 import os
 import subprocess
 import json
+from . import colors
 
 
 def createPyposer(click, default=False):
@@ -35,12 +36,15 @@ def createPyposer(click, default=False):
             "devDependencies": devDependencies
         }
 
-        # click.echo(json.dumps(pyposer, indent=2))
+        click.echo(
+            f"{colors.YELLOW}warning{colors.ENDC} The yes flag has been set. This will automatically answer yes to all questions"
+        )
         with open('pyposer.json', 'w') as file:
             try:
                 file.write(json.dumps(pyposer, indent=2))
-                return "Saved pyposer.json"
+                return click.echo(
+                    f"{colors.GREEN}success{colors.ENDC} Saved pyposer.json")
             except Exception as e:
-                return e
+                return click.echo(f"{colors.RED}error{colors.ENDC} {e}")
     else:
         click.echo("false")
