@@ -30,7 +30,10 @@ def install(package, dev=False, quiet=False):
             version = result.stdout.read().decode().replace('\n', '')
             with open('pyposer.json', 'r+') as f:
                 data = json.load(f)
-                data['dependencies'].update({package: version.split("==")[-1]})
+                data['dependencies'].update({
+                    package:
+                    version.replace(')', '').replace('(', '').split("==")[-1]
+                })
                 f.seek(0)
                 json.dump(data, f, indent=2)
                 f.truncate()
