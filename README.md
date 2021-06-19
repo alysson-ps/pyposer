@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to ppm 👋</h1>
+<h1 align="center">Welcome to ppm(python package maneger) 👋</h1>
 <p>
   <a href="https://www.npmjs.com/package/ppm" target="_blank">
     <img alt="Version" src="https://img.shields.io/npm/v/ppm.svg">
