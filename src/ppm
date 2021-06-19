@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # coding=utf-8
 
-from sys import argv
+from sys import argv, exit
 import click
 import time
 import subprocess
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import libs.initialPyposer as init_run
 import libs.colors as colors
-from libs.install import install as installPkg
+from libs.install import install as installPkg, remove as removePkg
 from libs.execScript import execCmd
 from libs.runVenv import down, up
 from libs import createVenv
@@ -25,7 +25,18 @@ _BANNER = f"{colors.BOLD}{__file__.split('/')[-1]} {_FIRST_ARG} {_VERSION}{color
 _PYPOSER_EXIST = os.path.exists('pyposer.json')
 
 
-@click.command()
+def print_version(ctx, param, value):
+    click.echo(_VERSION)
+    exit()
+
+
+@click.group()
+@click.option("-v", "--version", is_flag=True, callback=print_version)
+def group(version):
+    pass
+
+
+@group.command()
 @click.option("-y",
               "--yes",
               is_flag=True,
@@ -37,7 +48,7 @@ def init(yes):
     click.echo(f"done in {time.time() - start_time:.2f}")
 
 
-@click.command()
+@group.command()
 @click.option("-D", "--dev", is_flag=True, help="install how devDependencies")
 @click.option("-q",
               "--quiet",
@@ -51,56 +62,60 @@ def add(dev, libs, quiet):
     click.echo(f"done in {time.time() - start_time:.2f}")
 
 
-@click.command()
+@group.command()
+@click.option("-q",
+              "--quiet",
+              is_flag=True,
+              help="install how devDependencies")
+@click.argument("libs", required=True, nargs=-1)
+def remove(libs, quiet):
+    start_time = time.time()
+    for lib in libs:
+        removePkg(lib, quiet)
+    click.echo(f"done in {time.time() - start_time:.2f}")
+
+
+@group.command()
 def activate():
     up(_SHELL)
 
 
-@click.command()
+@group.command()
 def deactivate():
     down(_SHELL)
 
 
-@click.command()
+@group.command()
 @click.argument("cmd", required=True)
 def run(cmd):
     click.echo(f"{colors.BOLD}{colors.GREY}$ {execCmd(cmd)}{colors.ENDC}")
     os.system(execCmd(cmd))
 
 
-@click.command()
+@group.command()
 def install():
     with open('pyposer.json') as f:
         pyposer = json.load(f)
         if bool(pyposer['dependencies']):
             for pkg in list(pyposer['dependencies'].items()):
                 package = f'{pkg[0]}=={pkg[1]}'
-                install(False, [package], False)
+                installPkg(package)
         if bool(pyposer['devDependencies']):
             for pkg in list(pyposer['dependencies'].items()):
                 package = f'{pkg[0]}=={pkg[1]}'
-                group.commands['add'].callback(True, [package], False)
-
-
-@click.group()
-def group():
-    pass
-
-
-group.add_command(init)
-group.add_command(add)
-group.add_command(run)
-group.add_command(install)
-group.add_command(activate)
-group.add_command(deactivate)
+                group.commands['add'].callback(package, True, False)
 
 if __name__ == '__main__':
-    if not "activate" in _FIRST_ARG:
+    if "-" in _FIRST_ARG:
+        pass
+    elif not "activate" in _FIRST_ARG:
         print(_BANNER)
     if _PYPOSER_EXIST:
-        if not _FIRST_ARG in list(group.commands.keys()):
+        if not _FIRST_ARG in list(
+                group.commands.keys()) and not "-" in _FIRST_ARG:
             group.commands['run'].callback(_FIRST_ARG)
+            exit()
         if _FIRST_ARG == 'install':
             group.commands['install'].callback()
-    else:
-        group()
+            exit()
+    group()
