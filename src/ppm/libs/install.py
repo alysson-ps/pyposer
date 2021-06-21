@@ -74,7 +74,6 @@ def remove(package, quiet=False):
         okay = subprocess.run(["pip", "uninstall", package, "-y"],
                               stderr=subprocess.PIPE).returncode
     if okay == 0:
-        print('aqi')
         with open('pyposer.json', 'r+') as f:
             data = json.load(f)
             if data['dependencies'][package]:

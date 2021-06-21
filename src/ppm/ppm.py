@@ -16,7 +16,7 @@ from libs.execScript import execCmd
 from libs.runVenv import down, up
 from libs import createVenv
 
-_VERSION = 'v1.0.0'
+_VERSION = 'v0.1.0'
 _FIRST_ARG = argv[1] if len(argv) > 1 else "install"
 _SHELL = os.environ['SHELL'].split('/')[-1]
 _HOME_DIR = str(Path.home())
@@ -26,8 +26,11 @@ _PYPOSER_EXIST = os.path.exists('pyposer.json')
 
 
 def print_version(ctx, param, value):
-    click.echo(_VERSION)
-    exit()
+    if value:
+        click.echo(_VERSION)
+        exit()
+    else:
+        pass
 
 
 @click.group()
@@ -104,6 +107,7 @@ def install():
             for pkg in list(pyposer['dependencies'].items()):
                 package = f'{pkg[0]}=={pkg[1]}'
                 group.commands['add'].callback(package, True, False)
+
 
 if __name__ == '__main__':
     if "-" in _FIRST_ARG:
