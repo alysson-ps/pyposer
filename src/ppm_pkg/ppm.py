@@ -109,7 +109,7 @@ def install():
                 group.commands['add'].callback(package, True, False)
 
 
-if __name__ == '__main__':
+def main():
     if "-" in _FIRST_ARG:
         pass
     elif not "activate" in _FIRST_ARG:
@@ -123,3 +123,7 @@ if __name__ == '__main__':
             group.commands['install'].callback()
             exit()
     group()
+
+
+if __name__ == '__main__':
+    main()
