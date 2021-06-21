@@ -28,7 +28,8 @@ setup(
     },
     url=
     'https://github.com/alysson3dev/pyposer',  # Provide either the link to your github or to your website
-    download_url='https://github.com/alysson3dev/pyposer/archive/v_01.tar.gz',
+    download_url=
+    'https://github.com/alysson3dev/pyposer/archive/refs/tags/0.1.0.tar.gz',
     keywords=['PPM', 'PIP', 'PACKAGE', 'KEYWORDS'],
     classifiers=[
         'Development Status :: 3 - Alpha',  # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
